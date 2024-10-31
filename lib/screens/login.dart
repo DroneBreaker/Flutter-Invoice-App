@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   const SizedBox(height: 38),
                   const AppText(
-                    title: "Ghana Revenue Authority E-VAT",
+                    title: "Droners Invoicify",
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
