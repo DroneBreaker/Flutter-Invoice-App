@@ -73,6 +73,9 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black54,
+                          foregroundColor: Colors.white),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Handle form submission
@@ -202,9 +205,6 @@ class _LoginPageState extends State<LoginPage> {
     businessTINController.dispose();
     usernameController.dispose();
     passwordController.dispose();
-    companyController.dispose();
-    roleController.dispose();
-    educationController.dispose();
     super.dispose();
   }
 }
