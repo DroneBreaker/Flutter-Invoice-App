@@ -16,9 +16,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController businessTINController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController companyController = TextEditingController();
-  final TextEditingController roleController = TextEditingController();
-  final TextEditingController educationController = TextEditingController();
 
   final List<String> dropdownOptions = [
     'Select User Type',
