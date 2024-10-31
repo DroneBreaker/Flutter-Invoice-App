@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
   final String buttonText;
+  final double? fontSize;
   final Function() onTap;
-  const Button({super.key, required this.buttonText, required this.onTap});
+  final Color? colors;
+  const Button(
+      {super.key,
+      required this.buttonText,
+      required this.onTap,
+      this.fontSize,
+      this.colors});
 
   @override
   Widget build(BuildContext context) {
@@ -11,10 +18,12 @@ class Button extends StatelessWidget {
       onPressed: onTap,
       child: Text(
         buttonText,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: fontSize, color: colors),
       ),
-      style:
-          TextButton.styleFrom(minimumSize: const Size(150, 55), elevation: 0),
+      style: TextButton.styleFrom(
+          minimumSize: const Size(160, 60),
+          elevation: 0,
+          backgroundColor: Colors.black54),
     );
   }
 }
