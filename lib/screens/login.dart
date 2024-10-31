@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/screens/taxpayer.dart';
 import 'package:invoicify/widgets/app_text.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String selected = 'Select User Type';
   final _formKey = GlobalKey<FormState>();
+  bool _isPasswordVisible = false;
 
   // Controllers for different form fields
   final TextEditingController businessTINController = TextEditingController();
@@ -47,6 +49,8 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 18,
                   ),
                   const SizedBox(height: 25),
+
+                  // Dropdown field
                   DropdownButtonFormField<String>(
                     value: selected,
                     decoration: InputDecoration(
@@ -81,10 +85,13 @@ class _LoginPageState extends State<LoginPage> {
                           // Handle form submission
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Processing Login...'),
+                              content: Text('Login been processed...'),
                             ),
                           );
                           // Add your login logic here
+                          if (_formKey.currentState!.validate()) {
+                            _handleLogin();
+                          }
                         }
                       },
                       child: const Text(
@@ -148,6 +155,15 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
               controller: passwordController,
               decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    icon: Icon(_isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off)),
                 labelText: 'Password',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -206,5 +222,45 @@ class _LoginPageState extends State<LoginPage> {
     usernameController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void _showPasswordToggle() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  // Login functionality
+  void _handleLogin() {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    // Simulate API call
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pop(context); // Remove loading indicator
+
+      // Here you would typically make your actual API call
+      // For now, we'll just show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login Successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Add your navigation logic here
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TaxpayerPage()),
+      );
+    });
   }
 }
