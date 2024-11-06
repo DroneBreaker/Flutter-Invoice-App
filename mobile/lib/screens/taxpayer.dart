@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:invoicify/widgets/app_text.dart';
+import 'package:invoicify/widgets/button.dart';
 
 class TaxpayerPage extends StatefulWidget {
   const TaxpayerPage({super.key});
@@ -11,29 +12,30 @@ class TaxpayerPage extends StatefulWidget {
 class _TaxpayerPageState extends State<TaxpayerPage> {
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
+    return SafeArea(
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 28, 151, 196),
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 380.0),
-              child: Center(
-                child: AppText(
-                  title: "Welcome to taxpayer page",
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Center(
-              child: AppText(
-                title: "We goin' for a short commercial brea k....",
+        backgroundColor: const Color.fromARGB(255, 28, 151, 196),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 60.0, left: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppText(
+                title: "Please select invoice type",
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
-            ),
-          ],
+              Wrap(
+                spacing: 12.0,
+                runSpacing: 12.0,
+                children: [
+                  Button(buttonText: "Invoice", onTap: () => {}),
+                  Button(buttonText: "Purchase", onTap: () => {}),
+                  Button(buttonText: "Refund", onTap: () => {}),
+                  Button(buttonText: "Credit Note", onTap: () => {}),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

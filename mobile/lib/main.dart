@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/screens/auth/register.dart';
 import 'package:invoicify/screens/home.dart';
-import 'package:invoicify/screens/login.dart';
+import 'package:invoicify/screens/auth/login.dart';
+import 'package:invoicify/screens/taxpayer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +19,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/taxpayer': (context) => const TaxpayerPage(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),

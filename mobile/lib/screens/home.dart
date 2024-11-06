@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:invoicify/screens/login.dart';
+import 'package:invoicify/screens/auth/login.dart';
+import 'package:invoicify/screens/auth/register.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';
 
@@ -39,18 +40,40 @@ class HomePage extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Button(
-                buttonText: "Click to Login",
-                fontSize: 18,
-                colors: Colors.white,
-                onTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      ),
-                    })
+            Padding(
+              padding: const EdgeInsets.only(left: 30.0, right: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Button(
+                      buttonText: "Click to Login",
+                      size: const Size(160, 55),
+                      fontSize: 18,
+                      colors: Colors.white,
+                      onTap: () => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ),
+                            ),
+                          }),
+                  Button(
+                      buttonText: "Click to Register",
+                      size: const Size(160, 55),
+                      fontSize: 18,
+                      colors: Colors.white,
+                      onTap: () => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterPage(),
+                              ),
+                            ),
+                          }),
+                ],
+              ),
+            )
           ],
         ),
       ),
