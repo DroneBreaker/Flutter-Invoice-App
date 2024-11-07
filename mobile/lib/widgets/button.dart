@@ -6,13 +6,16 @@ class Button extends StatelessWidget {
   final Function() onTap;
   final Color? colors;
   final Size? size;
-  const Button(
-      {super.key,
-      required this.buttonText,
-      required this.onTap,
-      this.fontSize,
-      this.colors,
-      this.size});
+  final BorderRadius? borderRadius;
+  const Button({
+    super.key,
+    required this.buttonText,
+    required this.onTap,
+    this.fontSize,
+    this.colors,
+    this.size,
+    this.borderRadius,
+  });
 
   @override
   Widget build(BuildContext context) {
