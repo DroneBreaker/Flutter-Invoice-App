@@ -30,77 +30,92 @@ class _LoginPageState extends State<LoginPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 28, 151, 196),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 110.0, left: 20, right: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(height: 38),
-                  const AppText(
-                    title: "Droners Invoicify",
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 10),
-                  const AppText(
-                    title: "Please sign-in to your account",
-                    fontSize: 18,
-                  ),
-                  const SizedBox(height: 25),
-
-                  // Dropdown field
-                  DropdownButtonFormField<String>(
-                    value: selected,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      labelText: 'User Type',
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            colors: [
+              Color.fromRGBO(163, 201, 226, 1.5),
+              Color.fromRGBO(150, 24, 247, 0.5),
+              Color.fromRGBO(246, 239, 167, 0.5),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          )),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 110.0, left: 20, right: 20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 38),
+                    const AppText(
+                      title: "Droners Invoicify",
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
                     ),
-                    items: dropdownOptions.map((String option) {
-                      return DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(option),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selected = newValue!;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  _buildDynamicFields(),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black54,
-                          foregroundColor: Colors.white),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Handle form submission
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Login been processed...'),
-                            ),
-                          );
-                          // Add your login logic here
-                          if (_formKey.currentState!.validate()) {
-                            _handleLogin();
-                          }
-                        }
+                    const SizedBox(height: 10),
+                    const AppText(
+                      title: "Please sign-in to your account",
+                      fontSize: 18,
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Dropdown field
+                    DropdownButtonFormField<String>(
+                      value: selected,
+                      decoration: InputDecoration(
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        labelText: 'User Type',
+                      ),
+                      items: dropdownOptions.map((String option) {
+                        return DropdownMenuItem<String>(
+                          value: option,
+                          child: Text(option),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selected = newValue!;
+                        });
                       },
-                      child: const Text(
-                        'Log In',
-                        style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDynamicFields(),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black54,
+                            foregroundColor: Colors.white),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Handle form submission
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Login been processed...'),
+                              ),
+                            );
+                            // Add your login logic here
+                            if (_formKey.currentState!.validate()) {
+                              _handleLogin();
+                            }
+                          }
+                        },
+                        child: const Text(
+                          'Log In',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -117,56 +132,70 @@ class _LoginPageState extends State<LoginPage> {
         return Column(
           children: [
             // business TIN for TP
-            TextFormField(
-              controller: businessTINController,
-              decoration: InputDecoration(
-                labelText: 'Business TIN',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Form(
+              child: TextFormField(
+                controller: businessTINController,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  labelText: 'Business TIN',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your TIN';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your TIN';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 15),
+
             // Username section for TP
-            TextFormField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Form(
+              child: TextFormField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  labelText: 'Username',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 15),
+
             // Password section for TP
-            TextFormField(
-              obscureText: true,
-              controller: passwordController,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                    icon: Icon(_isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off)),
-                labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Form(
+              child: TextFormField(
+                obscureText: true,
+                controller: passwordController,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                      icon: Icon(_isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off)),
+                  labelText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
@@ -176,37 +205,47 @@ class _LoginPageState extends State<LoginPage> {
       case 'Authority':
         return Column(
           children: [
-            TextFormField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Form(
+              child: TextFormField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  labelText: 'Username',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter username';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter username';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 15),
-            TextFormField(
-              obscureText: true,
-              controller: passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+
+            // Passwowrd section for Authority
+            Form(
+              child: TextFormField(
+                obscureText: true,
+                controller: passwordController,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  labelText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
             ),
           ],
         );
