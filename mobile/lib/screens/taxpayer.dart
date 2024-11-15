@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -15,11 +17,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   final TextEditingController invoiceNumberController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController itemCodeController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
   final TextEditingController totalAmountController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  final TextEditingController itemController = TextEditingController();
+  final TextEditingController currencyController = TextEditingController();
   final TextEditingController itemDescriptionController =
       TextEditingController();
   final TextEditingController businessPartnerController =
@@ -32,9 +35,11 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   final _formKey = GlobalKey<FormState>();
   bool isTaxInclusive = false;
   bool isTaxable = false;
+  bool isDiscount = false;
   String selectedTourismOrCST = "None";
   String selectedItemCategory = "Regular VAT";
   String selectedBusinessPartner = "Customer";
+  String selectedCurrency = "GHS";
 
   // OPTIONS
   final List<String> tourismOrCSTOptions = ['None', 'Tourism', 'CST'];
@@ -44,6 +49,30 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     'Supplier',
     "Exempt"
   ];
+  final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
+  List<String> items = [];
+  List<String> filteredItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    priceController.addListener(_updateTotalAmount);
+    quantityController.addListener(_updateTotalAmount);
+    filteredItems = items;
+  }
+
+  // filter items added
+  void _filterItems(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredItems = items;
+      });
+    } else {
+      setState(() {
+        filteredItems = items;
+      });
+    }
+  }
 
   // Date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -272,13 +301,11 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         controller: usernameController,
                         enabled: false,
                         decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Username',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                            labelText: 'Username',
+                            disabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
                       ),
                     ),
                     const SizedBox(height: 15),
@@ -311,9 +338,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         readOnly: true,
                         enabled: false,
                         controller: totalAmountController,
+                        onChanged: (value) {
+                          _updateTotalAmount();
+                        },
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
+                          disabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
                           labelText: 'Total Amount',
                           border: OutlineInputBorder(
@@ -332,7 +362,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         Expanded(
                           child: Form(
                             child: TextFormField(
-                              controller: itemController,
+                              controller: itemNameController,
                               decoration: InputDecoration(
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide:
@@ -364,6 +394,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     // Quantity text field
                     Form(
                       child: TextFormField(
+                        keyboardType: TextInputType.number,
                         controller: quantityController,
                         decoration: InputDecoration(
                           enabledBorder: const OutlineInputBorder(
@@ -376,6 +407,23 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+
+                    // Price text field
+                    Form(
+                        child: TextFormField(
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      controller: priceController,
+                      decoration: InputDecoration(
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          labelText: "Price",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    )),
+                    const SizedBox(
+                      height: 15,
+                    ),
 
                     Center(
                       child: Button(
@@ -422,6 +470,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 10),
+
+                  // Item code text field
                   Form(
                     child: TextFormField(
                       decoration: InputDecoration(
@@ -433,6 +483,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
+
+                  // Item name controller text field
                   Form(
                     child: TextFormField(
                       controller: itemNameController,
@@ -451,6 +503,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
+
+                  // price controller text field
                   Form(
                     child: TextFormField(
                       controller: priceController,
@@ -470,24 +524,48 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Form(
-                    child: TextFormField(
-                      controller: quantityController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter the item quantity';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Quantity',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+
+                  // currency controller text field
+                  DropdownButtonFormField<String>(
+                    value: selectedCurrency,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      labelText: 'Currency',
                     ),
+                    items: currencyOptions.map((String option) {
+                      return DropdownMenuItem<String>(
+                        value: option,
+                        child: Text(option),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCurrency = newValue!;
+                      });
+                    },
                   ),
+                  // Form(
+                  //   child: TextFormField(
+                  //     controller: currencyController,
+                  //     validator: (value) {
+                  //       if (value == null || value.isEmpty) {
+                  //         return 'Please enter your currency';
+                  //       }
+                  //       return null;
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Currency',
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 15),
+
+                  // tax inclusive checkbox field
                   CheckboxListTile(
                     title: const AppText(
                       title: "Tax Inclusive?",
@@ -500,6 +578,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     },
                     controlAffinity: ListTileControlAffinity.leading,
                   ),
+
+                  // item description text field
                   Form(
                     child: TextFormField(
                       controller: itemDescriptionController,
@@ -512,6 +592,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                       ),
                     ),
                   ),
+
+                  // taxable checkbox text field
                   CheckboxListTile(
                     title: const AppText(
                       title: "Taxable?",
@@ -522,8 +604,10 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         isTaxable = value!;
                       });
                     },
-                    controlAffinity: ListTileControlAffinity.leading,
+                    controlAffinity: ListTileControlAffinity.platform,
                   ),
+
+                  // tourism or CST dropdown
                   DropdownButtonFormField<String>(
                     value: selectedTourismOrCST,
                     decoration: InputDecoration(
@@ -545,6 +629,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     },
                   ),
                   const SizedBox(height: 15),
+
+                  //item category dropdown
                   DropdownButtonFormField<String>(
                     value: selectedItemCategory,
                     decoration: InputDecoration(
@@ -565,6 +651,21 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                       });
                     },
                   ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+
+                  // discount section
+                  CheckboxListTile(
+                    title: const AppText(title: "Apply Discount"),
+                    value: isDiscount,
+                    controlAffinity: ListTileControlAffinity.platform,
+                    onChanged: (value) {
+                      setState(() {
+                        isTaxable = value!;
+                      });
+                    },
+                  )
                 ],
               ),
             ),
@@ -577,7 +678,10 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
               ),
               Button(
                 buttonText: "Add Item",
-                onTap: () {},
+                onTap: () {
+                  _addItems();
+                  Navigator.pop(context);
+                },
                 colors: Colors.white,
               )
             ],
@@ -585,6 +689,31 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
         );
       },
     );
+  }
+
+  void _addItems() {
+    if (itemNameController.text.isEmpty &&
+        priceController.text.isEmpty &&
+        currencyController.text.isEmpty) {
+      "Please fill in the required fields";
+    }
+
+    final newItem = {
+      'code': itemCodeController.text,
+      'name': itemNameController.text,
+      'price': double.tryParse(priceController.text) ?? 0.0,
+      'currency': currencyController.text,
+      'taxInclusive': isTaxInclusive,
+      'description': itemDescriptionController.text,
+      'isTaxable': isTaxable,
+      'itemOption': selectedTourismOrCST,
+      'category': selectedItemCategory,
+      'isDiscount': isDiscount
+    };
+
+    items.add(newItem.toString());
+
+    setState(() {});
   }
 
   void _showBusinessModal(BuildContext context) {
@@ -693,5 +822,22 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
             ],
           );
         });
+  }
+
+  void _updateTotalAmount() {
+    final double price = double.tryParse(priceController.text) ?? 0.0;
+    final int quantity = int.tryParse(quantityController.text) ?? 0;
+    final double totalAmount = price * quantity;
+    totalAmountController.text = totalAmount.toStringAsFixed(2);
+  }
+
+  @override
+  void dispose() {
+    priceController.removeListener(_updateTotalAmount);
+    quantityController.removeListener(_updateTotalAmount);
+    priceController.dispose();
+    quantityController.dispose();
+    totalAmountController.dispose();
+    super.dispose();
   }
 }
