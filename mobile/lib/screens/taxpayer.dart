@@ -33,8 +33,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   final TextEditingController timeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  bool isTaxInclusive = false;
-  bool isTaxable = false;
+  bool isTaxInclusive = true;
+  bool isTaxable = true;
   bool isDiscount = false;
   String selectedTourismOrCST = "None";
   String selectedItemCategory = "Regular VAT";
@@ -341,7 +341,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         onChanged: (value) {
                           _updateTotalAmount();
                         },
-                        keyboardType: TextInputType.number,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         decoration: InputDecoration(
                           disabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
@@ -363,11 +364,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                           child: Form(
                             child: TextFormField(
                               controller: itemNameController,
+                              onChanged: _filterItems,
                               decoration: InputDecoration(
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide:
                                         BorderSide(color: Colors.white)),
-                                labelText: "Enter item",
+                                labelText: "Item",
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -447,12 +449,14 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     );
   }
 
+  // Function to submit the form or payload
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       print('Form is valid, submitting...');
     }
   }
 
+  // Shows the item Modal
   void _showItemModal(BuildContext context) {
     showDialog(
       context: context,
@@ -691,6 +695,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     );
   }
 
+  // Adds new items to the items list
   void _addItems() {
     if (itemNameController.text.isEmpty &&
         priceController.text.isEmpty &&
@@ -699,7 +704,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     }
 
     final newItem = {
-      'code': itemCodeController.text,
+      'itemCode': itemCodeController.text,
       'name': itemNameController.text,
       'price': double.tryParse(priceController.text) ?? 0.0,
       'currency': currencyController.text,
@@ -713,9 +718,19 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
 
     items.add(newItem.toString());
 
-    setState(() {});
+    setState(() {
+      // itemNameController.clear();
+      // priceController.clear();
+      // currencyController.clear();
+      // isTaxInclusive = true;
+      // itemDescriptionController.clear();
+      // isTaxable = true;
+      // selectedTourismOrCST = "None";
+      // selectedItemCategory = "Regular VAT";
+    });
   }
 
+  // Shows the Business Modal
   void _showBusinessModal(BuildContext context) {
     showDialog(
         context: context,
@@ -824,6 +839,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
         });
   }
 
+  // Shows the updated total amount
   void _updateTotalAmount() {
     final double price = double.tryParse(priceController.text) ?? 0.0;
     final int quantity = int.tryParse(quantityController.text) ?? 0;
@@ -835,7 +851,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   void dispose() {
     priceController.removeListener(_updateTotalAmount);
     quantityController.removeListener(_updateTotalAmount);
-    priceController.dispose();
+    // priceController.dispose();
     quantityController.dispose();
     totalAmountController.dispose();
     super.dispose();
