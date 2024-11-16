@@ -27,6 +27,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
       TextEditingController();
   final TextEditingController businessPartnerController =
       TextEditingController();
+  final TextEditingController businessTINController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
@@ -50,8 +51,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     "Exempt"
   ];
   final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
-  List<String> items = [];
-  List<String> filteredItems = [];
+  List<Map<String, dynamic>> items = [];
+  List<Map<String, dynamic>> filteredItems = [];
 
   @override
   void initState() {
@@ -63,15 +64,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
 
   // filter items added
   void _filterItems(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        filteredItems = items;
-      });
-    } else {
-      setState(() {
-        filteredItems = items;
-      });
-    }
+    setState(() {
+      filteredItems = items
+          .where((item) =>
+              item['name'].toLowerCase().contains(query.toUpperCase()))
+          .toList();
+    });
   }
 
   // Date picker
@@ -716,7 +714,38 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
       'isDiscount': isDiscount
     };
 
-    items.add(newItem.toString());
+    items.add(newItem);
+
+    setState(() {
+      // itemNameController.clear();
+      // priceController.clear();
+      // currencyController.clear();
+      // isTaxInclusive = true;
+      // itemDescriptionController.clear();
+      // isTaxable = true;
+      // selectedTourismOrCST = "None";
+      // selectedItemCategory = "Regular VAT";
+    });
+  }
+
+  // Adds new items to the items list
+  void _addPartner() {
+    if (businessPartnerController.text.isEmpty &&
+        businessTINController.text.isEmpty &&
+        emailController.text.isEmpty &&
+        contactController.text.isEmpty) {
+      "Please fill in the required fields";
+    }
+
+    final newPartner = {
+      'businessName': businessPartnerController.text,
+      'businessTIN': businessTINController.text,
+      'businessOptions': businessPartnerOptions,
+      'email': emailController.text,
+      'contact': contactController.text,
+    };
+
+    items.add(newPartner);
 
     setState(() {
       // itemNameController.clear();
@@ -831,7 +860,10 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
               ),
               Button(
                 buttonText: "Add",
-                onTap: () {},
+                onTap: () {
+                  _addPartner();
+                  Navigator.pop(context);
+                },
                 colors: Colors.white,
               )
             ],
