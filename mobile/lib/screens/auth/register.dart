@@ -175,8 +175,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     Button(
                       buttonText: "Register",
-                      size: const Size(160, 55),
-                      colors: Colors.white,
+                      // size: const Size(160, 55),
+                      colors: Colors.blueGrey,
                       fontSize: 20,
                       onTap: () => {
                         // TODO: Implement registration logic here

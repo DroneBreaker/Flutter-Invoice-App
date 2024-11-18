@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -13,34 +11,34 @@ class TaxpayerPage extends StatefulWidget {
 }
 
 class _TaxpayerPageState extends State<TaxpayerPage> {
-  final TextEditingController vendorTINController = TextEditingController();
-  final TextEditingController invoiceNumberController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController itemNameController = TextEditingController();
-  final TextEditingController itemCodeController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController quantityController = TextEditingController();
-  final TextEditingController totalAmountController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
-  final TextEditingController currencyController = TextEditingController();
-  final TextEditingController itemDescriptionController =
-      TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
   final TextEditingController businessPartnerController =
       TextEditingController();
   final TextEditingController businessTINController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController invoiceNumberController = TextEditingController();
+  final TextEditingController totalAmountController = TextEditingController();
+  final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController itemCodeController = TextEditingController();
+  final TextEditingController itemDescriptionController =
+      TextEditingController();
+  final TextEditingController quantityController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController currencyController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController timeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   bool isTaxInclusive = true;
   bool isTaxable = true;
   bool isDiscount = false;
+  bool isActive = false;
   String selectedTourismOrCST = "None";
   String selectedItemCategory = "Regular VAT";
   String selectedBusinessPartner = "Customer";
   String selectedCurrency = "GHS";
+  String activeButton = '';
 
   // OPTIONS
   final List<String> tourismOrCSTOptions = ['None', 'Tourism', 'CST'];
@@ -51,8 +49,29 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     "Exempt"
   ];
   final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
+  final List<Map<String, dynamic>> flag = [
+    {
+      'text': 'Invoice',
+      'icon': Icons.inventory,
+    },
+    {
+      'text': 'Purchase',
+      'icon': Icons.shopping_cart,
+    },
+    {
+      'text': 'Refund',
+      'icon': Icons.assignment_return,
+    },
+    {
+      'text': 'Credit Note',
+      'icon': Icons.note,
+    },
+  ];
+
   List<Map<String, dynamic>> items = [];
+  List<Map<String, dynamic>> partners = [];
   List<Map<String, dynamic>> filteredItems = [];
+  List<Map<String, dynamic>> filteredPartners = [];
 
   @override
   void initState() {
@@ -108,14 +127,14 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(62, 180, 137, 1),
+        // backgroundColor: const Color.fromRGBO(62, 180, 137, 1),
         body: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(163, 201, 226, 1.5),
-              Color.fromRGBO(150, 24, 247, 0.5),
-              Color.fromRGBO(246, 239, 167, 0.5),
+              Color.fromRGBO(123, 104, 238, 1),
+              Color.fromRGBO(186, 85, 211, 1),
+              Color.fromRGBO(255, 192, 203, 1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -205,35 +224,47 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                       fontSize: 18,
                     ),
                     Wrap(
-                      spacing: 12.0,
-                      runSpacing: 12.0,
-                      children: [
-                        Button(
-                          buttonText: "Invoice",
-                          onTap: () {},
-                          colors: Colors.white,
-                          fontSize: 16,
+                        spacing: 12.0,
+                        runSpacing: 12.0,
+                        children: flag.map((data) {
+                          final bool isActive = activeButton == data['text'];
+                          return Button(
+                              buttonText: data['text'],
+                              onTap: () {
+                                setState(() {
+                                  activeButton = data['text'];
+                                });
+                              },
+                              colors: Colors.blueGrey,
+                              fontSize: 16,
+                              icon: isActive
+                                  ? Icon(
+                                      data['icon'],
+                                      color: Colors.blue,
+                                      size: 20,
+                                    )
+                                  : null);
+                        }).toList()
+
+                        // Button(
+                        //   buttonText: "Purchase",
+                        //   onTap: () {},
+                        //   colors: Colors.white,
+                        //   fontSize: 16,
+                        // ),
+                        // Button(
+                        //   buttonText: "Refund",
+                        //   onTap: () {},
+                        //   colors: Colors.white,
+                        //   fontSize: 16,
+                        // ),
+                        // Button(
+                        //   buttonText: "Credit Note",
+                        //   onTap: () {},
+                        //   colors: Colors.white,
+                        //   fontSize: 16,
+                        // ),
                         ),
-                        Button(
-                          buttonText: "Purchase",
-                          onTap: () {},
-                          colors: Colors.white,
-                          fontSize: 16,
-                        ),
-                        Button(
-                          buttonText: "Refund",
-                          onTap: () {},
-                          colors: Colors.white,
-                          fontSize: 16,
-                        ),
-                        Button(
-                          buttonText: "Credit Note",
-                          onTap: () {},
-                          colors: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 15),
 
                     // Business Partner section
@@ -259,8 +290,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         Button(
                           buttonText: "Add Partner",
                           onTap: () {},
-                          size: const Size(110, 55),
-                          colors: Colors.white,
+                          // size: const Size(110, 55),
+                          colors: Colors.blueGrey,
                           fontSize: 16,
                         ),
                         IconButton(
@@ -271,7 +302,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                     ),
                     const SizedBox(height: 15),
 
-                    // Vendor information text field
+                    // Business TIN text field
                     Form(
                       child: TextFormField(
                         validator: (value) {
@@ -280,11 +311,11 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                           }
                           return null;
                         },
-                        controller: vendorTINController,
+                        controller: businessTINController,
                         decoration: InputDecoration(
                           enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Vendor TIN',
+                          labelText: 'Business TIN',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -379,9 +410,9 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         Button(
                           buttonText: "Add Item",
                           onTap: () {},
-                          size: const Size(110, 55),
-                          colors: Colors.white,
-                          fontSize: 16,
+                          // size: const Size(110, 55),
+                          colors: Colors.blueGrey,
+                          fontSize: 17,
                         ),
                         IconButton(
                           icon: const Icon(Icons.add),
@@ -429,9 +460,9 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                       child: Button(
                         buttonText: 'Submit Invoice',
                         onTap: _submitForm,
-                        size: const Size(160, 55),
-                        colors: Colors.white,
-                        fontSize: 17,
+                        // size: const Size(160, 55),
+                        colors: Colors.blueGrey,
+                        fontSize: 18,
                       ),
                     ),
                     const SizedBox(
@@ -450,8 +481,34 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   // Function to submit the form or payload
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      // const CircularProgressIndicator(
+      //   value: 1,
+      //   semanticsLabel: "Hi",
+      // );
       print('Form is valid, submitting...');
     }
+
+    // Simulate a delay to show loading spinner
+    Future.delayed(const Duration(seconds: 1)).then((value) {
+      // const CircularProgressIndicator(
+      //   value: 0,
+      // );
+      // Mock data for the invoice payload
+      final invoicePayload = {
+        'transactionDate': dateController,
+        'transactionTime': timeController,
+        'businessName': businessPartnerController.text,
+        'flag': flag,
+        'businessPartner': businessPartnerController.text,
+        'businessTin': businessTINController.text,
+        'username': usernameController.text,
+        'invoiceNumber': invoiceNumberController.text,
+        'totalAmount': totalAmountController.text,
+        'items': items,
+        'quantity': quantityController.text,
+        'price': priceController.text,
+      };
+    });
   }
 
   // Shows the item Modal
@@ -680,11 +737,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
               ),
               Button(
                 buttonText: "Add Item",
+                fontSize: 17,
                 onTap: () {
                   _addItems();
                   Navigator.pop(context);
                 },
-                colors: Colors.white,
+                colors: Colors.blueGrey,
               )
             ],
           ),
@@ -846,9 +904,15 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                 const SizedBox(
                   height: 15,
                 ),
-                // Center(
-                //   child: Button(buttonText: "Add Partner", onTap: () {}),
-                // )
+                Center(
+                  child: Button(
+                      buttonText: "Add Partner",
+                      fontSize: 17,
+                      colors: Colors.blueGrey,
+                      onTap: () {
+                        _addPartner();
+                      }),
+                )
               ],
             ),
             actions: [
@@ -860,11 +924,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
               ),
               Button(
                 buttonText: "Add",
+                fontSize: 17,
                 onTap: () {
                   _addPartner();
                   Navigator.pop(context);
                 },
-                colors: Colors.white,
+                colors: Colors.blueGrey,
               )
             ],
           );

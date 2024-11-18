@@ -55,12 +55,13 @@ class HomePage extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 30.0, right: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     Button(
                         buttonText: "Click to Login",
-                        size: const Size(160, 55),
+                        // size: const Size(160, 55),
                         fontSize: 18,
-                        colors: Colors.white,
+                        colors: Colors.blueGrey,
                         onTap: () => {
                               Navigator.push(
                                 context,
@@ -71,9 +72,9 @@ class HomePage extends StatelessWidget {
                             }),
                     Button(
                         buttonText: "Click to Register",
-                        size: const Size(160, 55),
+                        // size: const Size(160, 55),
                         fontSize: 18,
-                        colors: Colors.white,
+                        colors: Colors.blueGrey,
                         onTap: () => {
                               Navigator.push(
                                 context,
