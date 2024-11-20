@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:invoicify/widgets/app_text.dart';
+import 'package:invoicify/widgets/business_modal.dart';
 import 'package:invoicify/widgets/button.dart';
 import 'package:intl/intl.dart';
+import 'package:invoicify/widgets/item_modal.dart';
 
 class TaxpayerPage extends StatefulWidget {
   const TaxpayerPage({super.key});
@@ -19,8 +21,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController invoiceNumberController = TextEditingController();
   final TextEditingController totalAmountController = TextEditingController();
-  final TextEditingController itemNameController = TextEditingController();
   final TextEditingController itemCodeController = TextEditingController();
+  final TextEditingController itemNameController = TextEditingController();
   final TextEditingController itemDescriptionController =
       TextEditingController();
   final TextEditingController quantityController = TextEditingController();
@@ -30,25 +32,25 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   final TextEditingController contactController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  bool isTaxInclusive = true;
-  bool isTaxable = true;
-  bool isDiscount = false;
-  bool isActive = false;
-  String selectedTourismOrCST = "None";
-  String selectedItemCategory = "Regular VAT";
-  String selectedBusinessPartner = "Customer";
-  String selectedCurrency = "GHS";
+  // bool isTaxInclusive = true;
+  // bool isTaxable = true;
+  // bool isDiscount = false;
+  // bool isActive = false;
+  // String selectedTourismOrCST = "None";
+  // String selectedItemCategory = "Regular VAT";
+  // String selectedBusinessPartner = "Customer";
+  // String selectedCurrency = "GHS";
   String activeButton = '';
 
   // OPTIONS
   final List<String> tourismOrCSTOptions = ['None', 'Tourism', 'CST'];
-  final List<String> itemCategoryOptions = ['Regular VAT', 'Rent', 'Exempt'];
-  final List<String> businessPartnerOptions = [
-    'Customer',
-    'Supplier',
-    "Exempt"
-  ];
-  final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
+  // final List<String> itemCategoryOptions = ['Regular VAT', 'Rent', 'Exempt'];
+  // final List<String> businessPartnerOptions = [
+  //   'Customer',
+  //   'Supplier',
+  //   "Exempt"
+  // ];
+  // final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
   final List<Map<String, dynamic>> flag = [
     {
       'text': 'Invoice',
@@ -78,16 +80,21 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     super.initState();
     priceController.addListener(_updateTotalAmount);
     quantityController.addListener(_updateTotalAmount);
-    filteredItems = items;
+    // filteredItems = items;
   }
 
   // filter items added
+  // Add this function to filter items based on search
   void _filterItems(String query) {
     setState(() {
-      filteredItems = items
-          .where((item) =>
-              item['name'].toLowerCase().contains(query.toUpperCase()))
-          .toList();
+      if (query.isEmpty) {
+        filteredItems = List.from(items);
+      } else {
+        filteredItems = items
+            .where((item) =>
+                item[1].toString().toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
@@ -129,11 +136,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
       child: Scaffold(
         // backgroundColor: const Color.fromRGBO(62, 180, 137, 1),
         body: Container(
+          // constraints: const BoxConstraints(maxWidth: double.infinity),
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
               Color.fromRGBO(123, 104, 238, 1),
-              Color.fromRGBO(186, 85, 211, 1),
+              Color.fromRGBO(186, 85, 211, 0.8),
               Color.fromRGBO(255, 192, 203, 1),
             ],
             begin: Alignment.topLeft,
@@ -296,7 +304,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.add),
-                          onPressed: () => _showBusinessModal(context),
+                          onPressed: () => const ShowBusinessModal(),
                         ),
                       ],
                     ),
@@ -409,18 +417,45 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                         const SizedBox(width: 15),
                         Button(
                           buttonText: "Add Item",
-                          onTap: () {},
+                          onTap: () {
+                            //FIX THIS LATER
+                            // _addItems();
+                          },
                           // size: const Size(110, 55),
                           colors: Colors.blueGrey,
                           fontSize: 17,
                         ),
                         IconButton(
                           icon: const Icon(Icons.add),
-                          onPressed: () => _showItemModal(context),
+                          onPressed: () => const ShowItemModal(),
                         ),
                       ],
                     ),
                     const SizedBox(height: 15),
+
+                    // buildItemsList(),
+
+                    // filteredItems.isNotEmpty
+                    //     ? Expanded(
+                    //         child: ListView.builder(
+                    //           itemCount: filteredItems.length,
+                    //           itemBuilder: (context, index) {
+                    //             final item = filteredItems[index];
+                    //             return ListTile(
+                    //               title: Text(item['name']),
+                    //               subtitle: Text('Price: \$${item['price']}'),
+                    //             );
+                    //           },
+                    //         ),
+                    //       )
+                    //     : const Center(
+                    //         child: AppText(
+                    //           title: "No items found",
+                    //         ),
+                    //       ),
+                    // const SizedBox(
+                    //   height: 5,
+                    // ),
 
                     // Quantity text field
                     Form(
@@ -511,430 +546,60 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
     });
   }
 
-  // Shows the item Modal
-  void _showItemModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            content: Container(
-              constraints: const BoxConstraints(maxWidth: 650),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const AppText(
-                    title: 'Set up a Product or a Service',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Item code text field
-                  Form(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Item Code',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+  // Filter items based on the search text
+  Widget buildItemsList() {
+    return Expanded(
+      child: filteredItems.isNotEmpty
+          ? ListView.builder(
+              itemCount: filteredItems.length,
+              itemBuilder: (context, index) {
+                final item = filteredItems[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  child: ListTile(
+                    title: Text(item[1]), // Item name
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Price: \$${item[2]}'),
+                        Text('Category: ${item[7]}'),
+                        if (item["3"].isNotEmpty)
+                          Text('Description: ${item[3]}'),
+                        Text('Tax Inclusive: ${item[4] ? "Yes" : "No"}'),
+                        Text('Taxable: ${item[5] ? "Yes" : "No"}'),
+                        if (item[6] != "None") Text('Tourism/CST: ${item[6]}'),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Item name controller text field
-                  Form(
-                    child: TextFormField(
-                      controller: itemNameController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your product name / service name';
-                        }
-                        return null;
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          items.removeAt(index);
+                          filteredItems = items;
+                        });
                       },
-                      decoration: InputDecoration(
-                        labelText: 'Item Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  // price controller text field
-                  Form(
-                    child: TextFormField(
-                      controller: priceController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your price';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Price',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  // currency controller text field
-                  DropdownButtonFormField<String>(
-                    value: selectedCurrency,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      labelText: 'Currency',
-                    ),
-                    items: currencyOptions.map((String option) {
-                      return DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(option),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCurrency = newValue!;
-                      });
+                    onTap: () {
+                      // Optionally add item selection logic here
+                      // For example, populate the main form with this item's details
+                      itemNameController.text = item[1];
+                      priceController.text = item[2];
+                      // ... populate other fields as needed
                     },
                   ),
-                  // Form(
-                  //   child: TextFormField(
-                  //     controller: currencyController,
-                  //     validator: (value) {
-                  //       if (value == null || value.isEmpty) {
-                  //         return 'Please enter your currency';
-                  //       }
-                  //       return null;
-                  //     },
-                  //     decoration: InputDecoration(
-                  //       labelText: 'Currency',
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  const SizedBox(height: 15),
-
-                  // tax inclusive checkbox field
-                  CheckboxListTile(
-                    title: const AppText(
-                      title: "Tax Inclusive?",
-                    ),
-                    value: isTaxInclusive,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isTaxInclusive = value!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                  ),
-
-                  // item description text field
-                  Form(
-                    child: TextFormField(
-                      controller: itemDescriptionController,
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                        labelText: 'Item Description',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // taxable checkbox text field
-                  CheckboxListTile(
-                    title: const AppText(
-                      title: "Taxable?",
-                    ),
-                    value: isTaxable,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isTaxable = value!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.platform,
-                  ),
-
-                  // tourism or CST dropdown
-                  DropdownButtonFormField<String>(
-                    value: selectedTourismOrCST,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      labelText: 'Tourism/CST',
-                    ),
-                    items: tourismOrCSTOptions.map((String option) {
-                      return DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(option),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedTourismOrCST = newValue!;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 15),
-
-                  //item category dropdown
-                  DropdownButtonFormField<String>(
-                    value: selectedItemCategory,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      labelText: 'Item Category',
-                    ),
-                    items: itemCategoryOptions.map((String option) {
-                      return DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(option),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedItemCategory = newValue!;
-                      });
-                    },
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-
-                  // discount section
-                  CheckboxListTile(
-                    title: const AppText(title: "Apply Discount"),
-                    value: isDiscount,
-                    controlAffinity: ListTileControlAffinity.platform,
-                    onChanged: (value) {
-                      setState(() {
-                        isTaxable = value!;
-                      });
-                    },
-                  )
-                ],
+                );
+              },
+            )
+          : const Center(
+              child: Text(
+                'No items found',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Close'),
-              ),
-              Button(
-                buttonText: "Add Item",
-                fontSize: 17,
-                onTap: () {
-                  _addItems();
-                  Navigator.pop(context);
-                },
-                colors: Colors.blueGrey,
-              )
-            ],
-          ),
-        );
-      },
     );
   }
 
-  // Adds new items to the items list
-  void _addItems() {
-    if (itemNameController.text.isEmpty &&
-        priceController.text.isEmpty &&
-        currencyController.text.isEmpty) {
-      "Please fill in the required fields";
-    }
-
-    final newItem = {
-      'itemCode': itemCodeController.text,
-      'name': itemNameController.text,
-      'price': double.tryParse(priceController.text) ?? 0.0,
-      'currency': currencyController.text,
-      'taxInclusive': isTaxInclusive,
-      'description': itemDescriptionController.text,
-      'isTaxable': isTaxable,
-      'itemOption': selectedTourismOrCST,
-      'category': selectedItemCategory,
-      'isDiscount': isDiscount
-    };
-
-    items.add(newItem);
-
-    setState(() {
-      // itemNameController.clear();
-      // priceController.clear();
-      // currencyController.clear();
-      // isTaxInclusive = true;
-      // itemDescriptionController.clear();
-      // isTaxable = true;
-      // selectedTourismOrCST = "None";
-      // selectedItemCategory = "Regular VAT";
-    });
-  }
-
-  // Adds new items to the items list
-  void _addPartner() {
-    if (businessPartnerController.text.isEmpty &&
-        businessTINController.text.isEmpty &&
-        emailController.text.isEmpty &&
-        contactController.text.isEmpty) {
-      "Please fill in the required fields";
-    }
-
-    final newPartner = {
-      'businessName': businessPartnerController.text,
-      'businessTIN': businessTINController.text,
-      'businessOptions': businessPartnerOptions,
-      'email': emailController.text,
-      'contact': contactController.text,
-    };
-
-    items.add(newPartner);
-
-    setState(() {
-      // itemNameController.clear();
-      // priceController.clear();
-      // currencyController.clear();
-      // isTaxInclusive = true;
-      // itemDescriptionController.clear();
-      // isTaxable = true;
-      // selectedTourismOrCST = "None";
-      // selectedItemCategory = "Regular VAT";
-    });
-  }
-
   // Shows the Business Modal
-  void _showBusinessModal(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const AppText(
-              title: "Setup a Business Partner",
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Form(
-                  child: TextFormField(
-                    controller: businessPartnerController,
-                    decoration: InputDecoration(
-                      labelText: 'Business Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedBusinessPartner,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    labelText: 'Type',
-                  ),
-                  items: businessPartnerOptions.map((String option) {
-                    return DropdownMenuItem<String>(
-                      value: option,
-                      child: Text(option),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedBusinessPartner = newValue!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 15),
-                Form(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Business TIN',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Form(
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Form(
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    controller: contactController,
-                    decoration: InputDecoration(
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Center(
-                  child: Button(
-                      buttonText: "Add Partner",
-                      fontSize: 17,
-                      colors: Colors.blueGrey,
-                      onTap: () {
-                        _addPartner();
-                      }),
-                )
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Close'),
-              ),
-              Button(
-                buttonText: "Add",
-                fontSize: 17,
-                onTap: () {
-                  _addPartner();
-                  Navigator.pop(context);
-                },
-                colors: Colors.blueGrey,
-              )
-            ],
-          );
-        });
-  }
 
   // Shows the updated total amount
   void _updateTotalAmount() {
@@ -948,7 +613,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   void dispose() {
     priceController.removeListener(_updateTotalAmount);
     quantityController.removeListener(_updateTotalAmount);
-    // priceController.dispose();
+    priceController.dispose();
     quantityController.dispose();
     totalAmountController.dispose();
     super.dispose();
