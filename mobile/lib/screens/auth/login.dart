@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/app_colors.dart';
 import 'package:invoicify/screens/taxpayer.dart';
 import 'package:invoicify/widgets/app_text.dart';
+import 'package:invoicify/widgets/button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController businessTINController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   final List<String> dropdownOptions = [
     'Select User Type',
@@ -45,77 +49,74 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.only(top: 110.0, left: 20, right: 20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 38),
-                    const AppText(
-                      title: "Droners Invoicify",
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    const SizedBox(height: 10),
-                    const AppText(
-                      title: "Please sign-in to your account",
-                      fontSize: 18,
-                    ),
-                    const SizedBox(height: 25),
+              child: Column(
+                children: [
+                  const SizedBox(height: 38),
+                  const AppText(
+                    title: "Droners Invoicify",
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 10),
+                  const AppText(
+                    title: "Please sign-in to your account",
+                    fontSize: 18,
+                  ),
+                  const SizedBox(height: 25),
 
-                    // Dropdown field
-                    DropdownButtonFormField<String>(
-                      value: selected,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        labelText: 'User Type',
-                      ),
-                      items: dropdownOptions.map((String option) {
-                        return DropdownMenuItem<String>(
-                          value: option,
-                          child: Text(option),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selected = newValue!;
-                        });
-                      },
+                  // Dropdown field
+                  DropdownButtonFormField<String>(
+                    value: selected,
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      labelText: 'User Type',
                     ),
-                    const SizedBox(height: 20),
-                    _buildDynamicFields(),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black54,
-                            foregroundColor: Colors.white),
-                        onPressed: () {
+                    items: dropdownOptions.map((String option) {
+                      return DropdownMenuItem<String>(
+                        value: option,
+                        child: Text(option),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selected = newValue!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildDynamicFields(),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black54,
+                          foregroundColor: Colors.white),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // Handle form submission
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Login been processed...'),
+                            ),
+                          );
+                          // Add your login logic here
                           if (_formKey.currentState!.validate()) {
-                            // Handle form submission
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Login been processed...'),
-                              ),
-                            );
-                            // Add your login logic here
-                            if (_formKey.currentState!.validate()) {
-                              _handleLogin();
-                            }
+                            _handleLogin();
                           }
-                        },
-                        child: const Text(
-                          'Log In',
-                          style: TextStyle(fontSize: 16),
-                        ),
+                        }
+                      },
+                      child: const Text(
+                        'Log In',
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -129,11 +130,12 @@ class _LoginPageState extends State<LoginPage> {
       case 'Select User Type':
         return const SizedBox();
       case 'Taxpayer':
-        return Column(
-          children: [
-            // business TIN for TP
-            Form(
-              child: TextFormField(
+        return Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // business TIN for TP
+              TextFormField(
                 controller: businessTINController,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -147,15 +149,16 @@ class _LoginPageState extends State<LoginPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your TIN';
                   }
+                  if (value.length < 6 && value.length <= 11) {
+                    return 'Business TIN must be between 6 and 11 characters long';
+                  }
                   return null;
                 },
               ),
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-            // Username section for TP
-            Form(
-              child: TextFormField(
+              // Username section for TP
+              TextFormField(
                 controller: usernameController,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -169,15 +172,16 @@ class _LoginPageState extends State<LoginPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
                   }
+                  if (value.length < 6) {
+                    return 'Username must be 6 characters long';
+                  }
                   return null;
                 },
               ),
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-            // Password section for TP
-            Form(
-              child: TextFormField(
+              // Password section for TP
+              TextFormField(
                 obscureText: true,
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -198,8 +202,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
 
       case 'Authority':
@@ -260,6 +264,7 @@ class _LoginPageState extends State<LoginPage> {
     businessTINController.dispose();
     usernameController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -284,22 +289,59 @@ class _LoginPageState extends State<LoginPage> {
 
     // Simulate API call
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Remove loading indicator
+      if (selected == dropdownOptions[0]) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const SingleChildScrollView(
+                child: Column(
+                  children: [
+                    AppText(
+                      title: "Please select a user type before proceeding!",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                Button(
+                  buttonText: "Close",
+                  fontSize: 17,
+                  onTap: () {
+                    Navigator.pop(context);
 
-      // Here you would typically make your actual API call
-      // For now, we'll just show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login Successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+                    // Navigate to taxpayer page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                    );
+                  },
+                  colors: AppColors.buttonPrimary,
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Navigator.pop(context); // Remove loading indicator
 
-      // Add your navigation logic here
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TaxpayerPage()),
-      );
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login Successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to taxpayer page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const TaxpayerPage()),
+        );
+      }
     });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/app_colors.dart';
 import 'package:invoicify/screens/auth/login.dart';
 import 'package:invoicify/screens/auth/register.dart';
 import 'package:invoicify/widgets/app_text.dart';
@@ -16,9 +17,11 @@ class HomePage extends StatelessWidget {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(163, 201, 226, 1.5),
-              Color.fromRGBO(150, 24, 247, 0.5),
-              Color.fromRGBO(246, 239, 167, 0.5),
+              AppColors.accentDark,
+              AppColors.background,
+              // Color.fromRGBO(163, 201, 226, 1.5),
+              // Color.fromRGBO(150, 24, 247, 0.5),
+              // Color.fromRGBO(246, 239, 167, 0.5),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -61,7 +64,7 @@ class HomePage extends StatelessWidget {
                         buttonText: "Click to Login",
                         // size: const Size(160, 55),
                         fontSize: 18,
-                        colors: Colors.blueGrey,
+                        colors: AppColors.buttonPrimary,
                         onTap: () => {
                               Navigator.push(
                                 context,
@@ -74,7 +77,7 @@ class HomePage extends StatelessWidget {
                         buttonText: "Click to Register",
                         // size: const Size(160, 55),
                         fontSize: 18,
-                        colors: Colors.blueGrey,
+                        colors: AppColors.buttonPrimary,
                         onTap: () => {
                               Navigator.push(
                                 context,

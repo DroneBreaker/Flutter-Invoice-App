@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/app_colors.dart';
 import 'package:invoicify/screens/taxpayer.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -36,9 +37,11 @@ class _RegisterPageState extends State<RegisterPage> {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(163, 201, 226, 1.5),
-              Color.fromRGBO(150, 24, 247, 0.5),
-              Color.fromRGBO(246, 239, 167, 0.5),
+              AppColors.accentDark,
+              AppColors.background,
+              // Color.fromRGBO(163, 201, 226, 1.5),
+              // Color.fromRGBO(150, 24, 247, 0.5),
+              // Color.fromRGBO(246, 239, 167, 0.5),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -176,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Button(
                       buttonText: "Register",
                       // size: const Size(160, 55),
-                      colors: Colors.blueGrey,
+                      colors: AppColors.buttonPrimary,
                       fontSize: 20,
                       onTap: () => {
                         // TODO: Implement registration logic here
