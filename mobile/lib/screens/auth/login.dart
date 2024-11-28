@@ -97,18 +97,20 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: Colors.black54,
                           foregroundColor: Colors.white),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Handle form submission
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Login been processed...'),
-                            ),
-                          );
-                          // Add your login logic here
-                          if (_formKey.currentState!.validate()) {
-                            _handleLogin();
-                          }
-                        }
+                        // if (_formKey.currentState!.validate()) {
+                        //   // Handle form submission
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     const SnackBar(
+                        //       content: Text('Login been processed...'),
+                        //     ),
+                        //   );
+                        //   // Add your login logic here
+                        //   if (_formKey.currentState!.validate()) {
+                        //     _handleLogin();
+                        //   }
+                        // }
+
+                        _handleLogin();
                       },
                       child: const Text(
                         'Log In',
@@ -182,6 +184,11 @@ class _LoginPageState extends State<LoginPage> {
 
               // Password section for TP
               TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                },
                 obscureText: true,
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -207,10 +214,11 @@ class _LoginPageState extends State<LoginPage> {
         );
 
       case 'Authority':
-        return Column(
-          children: [
-            Form(
-              child: TextFormField(
+        return Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
                 controller: usernameController,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -224,15 +232,16 @@ class _LoginPageState extends State<LoginPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter username';
                   }
+                  if (value == value && value.length < 6) {
+                    return 'Username must be 6 characters long';
+                  }
                   return null;
                 },
               ),
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-            // Passwowrd section for Authority
-            Form(
-              child: TextFormField(
+              // Passwowrd section for Authority
+              TextFormField(
                 obscureText: true,
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -247,11 +256,14 @@ class _LoginPageState extends State<LoginPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
+                  if (value == value) {
+                    return 'Please enter a valid password';
+                  }
                   return null;
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         );
 
       default:

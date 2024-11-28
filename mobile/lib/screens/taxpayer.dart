@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoicify/app_colors.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/business_modal.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -51,7 +52,8 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
   //   "Exempt"
   // ];
   // final List<String> currencyOptions = ["GHS", "USD", "EUR", "GBP"];
-  final List<Map<String, dynamic>> flag = [
+  String? selectedFlag;
+  final List<Map<String, dynamic>> flags = [
     {
       'text': 'Invoice',
       'icon': Icons.inventory,
@@ -153,356 +155,389 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppText(
-                      title: "Enter details to issue an invoice",
-                      fontSize: 25,
-                    ),
-                    const SizedBox(height: 20.0),
-                    const AppText(
-                      title: "Invoice Date",
-                      fontSize: 18,
-                    ),
+                    FormField<String>(validator: (value) {
+                      if (selectedFlag == null) {
+                        return 'Please select an invoice type';
+                      }
+                      return null;
+                    }, builder: (FormFieldState<String> state) {
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AppText(
+                              title: "Enter details to issue an invoice",
+                              fontSize: 25,
+                            ),
+                            const SizedBox(height: 20.0),
+                            const AppText(
+                              title: "Invoice Date",
+                              fontSize: 18,
+                            ),
 
-                    // Invoice Date
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Form(
-                            child: TextFormField(
-                              readOnly: true,
-                              enabled: false,
-                              controller: dateController,
+                            // Invoice Date
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Form(
+                                    child: TextFormField(
+                                      readOnly: true,
+                                      enabled: false,
+                                      controller: dateController,
+                                      decoration: InputDecoration(
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.white)),
+                                        labelText: 'Invoice Date',
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide.none),
+                                      ),
+                                      onChanged: (value) {
+                                        print('Invoice Date: $value');
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                IconButton(
+                                    onPressed: () {
+                                      _selectDate(context);
+                                    },
+                                    icon: const Icon(Icons.calendar_today))
+                              ],
+                            ),
+
+                            // Invoice Time
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Form(
+                                    child: TextFormField(
+                                      readOnly: true,
+                                      enabled: false,
+                                      controller: timeController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Invoice Time',
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide.none),
+                                      ),
+                                      onChanged: (value) {
+                                        print('Invoice Time: $value');
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                IconButton(
+                                    onPressed: () {
+                                      _selectTime(context);
+                                    },
+                                    icon: const Icon(Icons.timer))
+                              ],
+                            ),
+                            const AppText(
+                              title: "Please select document type",
+                              fontSize: 18,
+                            ),
+                            Wrap(
+                                spacing: 12.0,
+                                runSpacing: 12.0,
+                                children: flags.map((flag) {
+                                  final bool isActive =
+                                      activeButton == flag['text'];
+                                  return Button(
+                                      buttonText: flag['text'],
+                                      onTap: () {
+                                        setState(() {
+                                          activeButton = flag['text'];
+                                          selectedFlag = flag['text'];
+                                        });
+
+                                        state.didChange(flag['text']);
+                                      },
+                                      colors: Colors.blueGrey,
+                                      fontSize: 16,
+                                      icon: isActive
+                                          ? Icon(
+                                              flag['icon'],
+                                              color: Colors.blue,
+                                              size: 20,
+                                            )
+                                          : null);
+                                }).toList()
+
+                                // Button(
+                                //   buttonText: "Purchase",
+                                //   onTap: () {},
+                                //   colors: Colors.white,
+                                //   fontSize: 16,
+                                // ),
+                                // Button(
+                                //   buttonText: "Refund",
+                                //   onTap: () {},
+                                //   colors: Colors.white,
+                                //   fontSize: 16,
+                                // ),
+                                // Button(
+                                //   buttonText: "Credit Note",
+                                //   onTap: () {},
+                                //   colors: Colors.white,
+                                //   fontSize: 16,
+                                // ),
+                                ),
+                            const SizedBox(height: 20),
+
+                            // Business Partner section
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your business name';
+                                      }
+                                      return null;
+                                    },
+                                    controller: businessPartnerController,
+                                    decoration: InputDecoration(
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      labelText: 'Business Partner',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                Button(
+                                  buttonText: "Add Partner",
+                                  onTap: () {},
+                                  // size: const Size(110, 55),
+                                  colors: Colors.blueGrey,
+                                  fontSize: 16,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () => const ShowBusinessModal(),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Business TIN text field
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your business TIN';
+                                }
+                                if (value.length < 11) {
+                                  return 'Please enter a valid 11 character TIN';
+                                }
+                                return null;
+                              },
+                              controller: businessTINController,
                               decoration: InputDecoration(
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide:
                                         BorderSide(color: Colors.white)),
-                                labelText: 'Invoice Date',
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none),
-                              ),
-                              onChanged: (value) {
-                                print('Invoice Date: $value');
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        IconButton(
-                            onPressed: () {
-                              _selectDate(context);
-                            },
-                            icon: const Icon(Icons.calendar_today))
-                      ],
-                    ),
-
-                    // Invoice Time
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Form(
-                            child: TextFormField(
-                              readOnly: true,
-                              enabled: false,
-                              controller: timeController,
-                              decoration: InputDecoration(
-                                labelText: 'Invoice Time',
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none),
-                              ),
-                              onChanged: (value) {
-                                print('Invoice Time: $value');
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        IconButton(
-                            onPressed: () {
-                              _selectTime(context);
-                            },
-                            icon: const Icon(Icons.timer))
-                      ],
-                    ),
-                    const AppText(
-                      title: "Please select document type",
-                      fontSize: 18,
-                    ),
-                    Wrap(
-                        spacing: 12.0,
-                        runSpacing: 12.0,
-                        children: flag.map((data) {
-                          final bool isActive = activeButton == data['text'];
-                          return Button(
-                              buttonText: data['text'],
-                              onTap: () {
-                                setState(() {
-                                  activeButton = data['text'];
-                                });
-                              },
-                              colors: Colors.blueGrey,
-                              fontSize: 16,
-                              icon: isActive
-                                  ? Icon(
-                                      data['icon'],
-                                      color: Colors.blue,
-                                      size: 20,
-                                    )
-                                  : null);
-                        }).toList()
-
-                        // Button(
-                        //   buttonText: "Purchase",
-                        //   onTap: () {},
-                        //   colors: Colors.white,
-                        //   fontSize: 16,
-                        // ),
-                        // Button(
-                        //   buttonText: "Refund",
-                        //   onTap: () {},
-                        //   colors: Colors.white,
-                        //   fontSize: 16,
-                        // ),
-                        // Button(
-                        //   buttonText: "Credit Note",
-                        //   onTap: () {},
-                        //   colors: Colors.white,
-                        //   fontSize: 16,
-                        // ),
-                        ),
-                    const SizedBox(height: 15),
-
-                    // Business Partner section
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Form(
-                            child: TextFormField(
-                              controller: businessPartnerController,
-                              decoration: InputDecoration(
-                                enabledBorder: const OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.white)),
-                                labelText: 'Business Partner',
+                                labelText: 'Business TIN',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Button(
-                          buttonText: "Add Partner",
-                          onTap: () {},
-                          // size: const Size(110, 55),
-                          colors: Colors.blueGrey,
-                          fontSize: 16,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => const ShowBusinessModal(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
+                            const SizedBox(height: 15),
 
-                    // Business TIN text field
-                    Form(
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your vendor TIN';
-                          }
-                          return null;
-                        },
-                        controller: businessTINController,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Business TIN',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
+                            //Username text field
+                            Form(
+                              child: TextFormField(
+                                controller: usernameController,
+                                enabled: false,
+                                decoration: InputDecoration(
+                                    labelText: 'Username',
+                                    disabledBorder: const OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white)),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10))),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
 
-                    //Username text field
-                    Form(
-                      child: TextFormField(
-                        controller: usernameController,
-                        enabled: false,
-                        decoration: InputDecoration(
-                            labelText: 'Username',
-                            disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white)),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    // Invoice number text field
-                    Form(
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your invoice number';
-                          }
-                          return null;
-                        },
-                        controller: invoiceNumberController,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Invoice Number',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    // Total amount text field
-                    Form(
-                      child: TextFormField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: totalAmountController,
-                        onChanged: (value) {
-                          _updateTotalAmount();
-                        },
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        decoration: InputDecoration(
-                          disabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Total Amount',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    const AppText(title: 'Items', fontSize: 18),
-                    const SizedBox(height: 15),
-
-                    //Item section
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Form(
-                            child: TextFormField(
-                              controller: itemNameController,
-                              onChanged: _filterItems,
+                            // Invoice number text field
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your invoice number';
+                                }
+                                return null;
+                              },
+                              controller: invoiceNumberController,
                               decoration: InputDecoration(
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide:
                                         BorderSide(color: Colors.white)),
-                                labelText: "Item",
+                                labelText: 'Invoice Number',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Button(
-                          buttonText: "Add Item",
-                          onTap: () {
-                            //FIX THIS LATER
-                            // _addItems();
-                          },
-                          // size: const Size(110, 55),
-                          colors: Colors.blueGrey,
-                          fontSize: 17,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => const ShowItemModal(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
+                            const SizedBox(height: 15),
 
-                    // buildItemsList(),
+                            // Total amount text field
+                            Form(
+                              child: TextFormField(
+                                readOnly: true,
+                                enabled: false,
+                                controller: totalAmountController,
+                                onChanged: (value) {
+                                  _updateTotalAmount();
+                                },
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
+                                decoration: InputDecoration(
+                                  disabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  labelText: 'Total Amount',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            const AppText(title: 'Items', fontSize: 18),
+                            const SizedBox(height: 15),
 
-                    // filteredItems.isNotEmpty
-                    //     ? Expanded(
-                    //         child: ListView.builder(
-                    //           itemCount: filteredItems.length,
-                    //           itemBuilder: (context, index) {
-                    //             final item = filteredItems[index];
-                    //             return ListTile(
-                    //               title: Text(item['name']),
-                    //               subtitle: Text('Price: \$${item['price']}'),
-                    //             );
-                    //           },
-                    //         ),
-                    //       )
-                    //     : const Center(
-                    //         child: AppText(
-                    //           title: "No items found",
-                    //         ),
-                    //       ),
-                    // const SizedBox(
-                    //   height: 5,
-                    // ),
+                            //Item section
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Form(
+                                    child: TextFormField(
+                                      controller: itemNameController,
+                                      onChanged: _filterItems,
+                                      decoration: InputDecoration(
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.white)),
+                                        labelText: "Item",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                Button(
+                                  buttonText: "Add Item",
+                                  onTap: () {
+                                    //FIX THIS LATER
+                                    // _addItems();
+                                  },
+                                  // size: const Size(110, 55),
+                                  colors: Colors.blueGrey,
+                                  fontSize: 17,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () => const ShowItemModal(),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
 
-                    // Quantity text field
-                    Form(
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: quantityController,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Quantity',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
+                            // buildItemsList(),
 
-                    // Price text field
-                    Form(
-                        child: TextFormField(
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      controller: priceController,
-                      decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: "Price",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                    )),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                            // filteredItems.isNotEmpty
+                            //     ? Expanded(
+                            //         child: ListView.builder(
+                            //           itemCount: filteredItems.length,
+                            //           itemBuilder: (context, index) {
+                            //             final item = filteredItems[index];
+                            //             return ListTile(
+                            //               title: Text(item['name']),
+                            //               subtitle: Text('Price: \$${item['price']}'),
+                            //             );
+                            //           },
+                            //         ),
+                            //       )
+                            //     : const Center(
+                            //         child: AppText(
+                            //           title: "No items found",
+                            //         ),
+                            //       ),
+                            // const SizedBox(
+                            //   height: 5,
+                            // ),
 
-                    Center(
-                      child: Button(
-                        buttonText: 'Submit Invoice',
-                        onTap: _submitForm,
-                        // size: const Size(160, 55),
-                        colors: Colors.blueGrey,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    )
+                            // Quantity text field
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter quantity';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.number,
+                              controller: quantityController,
+                              decoration: InputDecoration(
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                labelText: 'Quantity',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Price text field
+                            Form(
+                                child: TextFormField(
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              controller: priceController,
+                              decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  labelText: "Price",
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10))),
+                            )),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            Center(
+                              child: Button(
+                                buttonText: 'Submit Invoice',
+                                onTap: _submitForm,
+                                // size: const Size(160, 55),
+                                colors: Colors.blueGrey,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            )
+                          ]);
+                    }),
                   ],
                 ),
               ),
@@ -523,27 +558,56 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
       print('Form is valid, submitting...');
     }
 
+    if (selectedFlag == null) {
+      setState(() {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                // backgroundColor: AppColors.error,
+                title: const AppText(
+                  title: "PLEASE SELECT AN INVOICE TYPE",
+                  colors: AppColors.info,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                actions: [
+                  Button(
+                      buttonText: "Close",
+                      colors: AppColors.buttonPrimary,
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ],
+              );
+            });
+        // errorText = 'Please select an option before submitting';
+      });
+    } else {
+      return;
+    }
+
     // Simulate a delay to show loading spinner
-    Future.delayed(const Duration(seconds: 1)).then((value) {
-      // const CircularProgressIndicator(
-      //   value: 0,
-      // );
-      // Mock data for the invoice payload
-      final invoicePayload = {
-        'transactionDate': dateController,
-        'transactionTime': timeController,
-        'businessName': businessPartnerController.text,
-        'flag': flag,
-        'businessPartner': businessPartnerController.text,
-        'businessTin': businessTINController.text,
-        'username': usernameController.text,
-        'invoiceNumber': invoiceNumberController.text,
-        'totalAmount': totalAmountController.text,
-        'items': items,
-        'quantity': quantityController.text,
-        'price': priceController.text,
-      };
-    });
+    // Future.delayed(const Duration(seconds: 1)).then((value) {
+    //   // const CircularProgressIndicator(
+    //   //   value: 0,
+    //   // );
+    //   // Mock data for the invoice payload
+    //   final invoicePayload = {
+    //     'transactionDate': dateController,
+    //     'transactionTime': timeController,
+    //     'businessName': businessPartnerController.text,
+    //     'flag': flag,
+    //     'businessPartner': businessPartnerController.text,
+    //     'businessTin': businessTINController.text,
+    //     'username': usernameController.text,
+    //     'invoiceNumber': invoiceNumberController.text,
+    //     'totalAmount': totalAmountController.text,
+    //     'items': items,
+    //     'quantity': quantityController.text,
+    //     'price': priceController.text,
+    //   };
+    // });
   }
 
   // Filter items based on the search text
