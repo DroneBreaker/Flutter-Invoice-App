@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:invoicify/app_colors.dart';
+import 'package:invoicify/constants/app_colors.dart';
 import 'package:invoicify/screens/taxpayer.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:invoicify/app_colors.dart';
+import 'package:invoicify/constants/app_colors.dart';
+import 'package:invoicify/constants/app_titles.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/business_modal.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -142,12 +143,15 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(123, 104, 238, 1),
-              Color.fromRGBO(186, 85, 211, 0.8),
-              Color.fromRGBO(255, 192, 203, 1),
+              // Color.fromRGBO(123, 104, 238, 1),
+              // Color.fromRGBO(186, 85, 211, 0.8),
+              // Color.fromRGBO(255, 192, 203, 1),
+              AppColors.primary,
+              AppColors.secondary,
+              AppColors.accent
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
           )),
           child: SingleChildScrollView(
             child: Padding(
@@ -166,12 +170,12 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const AppText(
-                              title: "Enter details to issue an invoice",
+                              title: AppTitle.taxpayerTitle,
                               fontSize: 25,
                             ),
                             const SizedBox(height: 20.0),
                             const AppText(
-                              title: "Invoice Date",
+                              title: AppTitle.invoiceDate,
                               fontSize: 18,
                             ),
 
@@ -188,7 +192,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                         enabledBorder: const OutlineInputBorder(
                                             borderSide: BorderSide(
                                                 color: Colors.white)),
-                                        labelText: 'Invoice Date',
+                                        labelText: AppTitle.invoiceDate,
                                         border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10),
@@ -219,7 +223,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                       enabled: false,
                                       controller: timeController,
                                       decoration: InputDecoration(
-                                        labelText: 'Invoice Time',
+                                        labelText: AppTitle.invoiceTime,
                                         border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10),
@@ -240,7 +244,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                               ],
                             ),
                             const AppText(
-                              title: "Please select document type",
+                              title: AppTitle.documentType,
                               fontSize: 18,
                             ),
                             Wrap(
@@ -259,7 +263,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
 
                                         state.didChange(flag['text']);
                                       },
-                                      colors: Colors.blueGrey,
+                                      colors: AppColors.buttonPrimary,
                                       fontSize: 16,
                                       icon: isActive
                                           ? Icon(
@@ -316,10 +320,10 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                 ),
                                 const SizedBox(width: 15),
                                 Button(
-                                  buttonText: "Add Partner",
+                                  buttonText: AppTitle.addPartnerButton,
                                   onTap: () {},
                                   // size: const Size(110, 55),
-                                  colors: Colors.blueGrey,
+                                  colors: AppColors.buttonPrimary,
                                   fontSize: 16,
                                 ),
                                 IconButton(
@@ -334,10 +338,10 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                             TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your business TIN';
+                                  return AppTitle.businessTINError;
                                 }
                                 if (value.length < 11) {
-                                  return 'Please enter a valid 11 character TIN';
+                                  return AppTitle.validBusinessTINError;
                                 }
                                 return null;
                               },
@@ -375,7 +379,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                             TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your invoice number';
+                                  return AppTitle.invoiceNumberError;
                                 }
                                 return null;
                               },
@@ -384,7 +388,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide:
                                         BorderSide(color: Colors.white)),
-                                labelText: 'Invoice Number',
+                                labelText: AppTitle.invoiceNumberField,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -408,7 +412,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                   disabledBorder: const OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.white)),
-                                  labelText: 'Total Amount',
+                                  labelText: AppTitle.totalAmountField,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -431,7 +435,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                         enabledBorder: const OutlineInputBorder(
                                             borderSide: BorderSide(
                                                 color: Colors.white)),
-                                        labelText: "Item",
+                                        labelText: AppTitle.itemField,
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -442,13 +446,13 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                 ),
                                 const SizedBox(width: 15),
                                 Button(
-                                  buttonText: "Add Item",
+                                  buttonText: AppTitle.addItemButton,
                                   onTap: () {
                                     //FIX THIS LATER
                                     // _addItems();
                                   },
                                   // size: const Size(110, 55),
-                                  colors: Colors.blueGrey,
+                                  colors: AppColors.buttonPrimary,
                                   fontSize: 17,
                                 ),
                                 IconButton(
@@ -529,7 +533,7 @@ class _TaxpayerPageState extends State<TaxpayerPage> {
                                 buttonText: 'Submit Invoice',
                                 onTap: _submitForm,
                                 // size: const Size(160, 55),
-                                colors: Colors.blueGrey,
+                                colors: AppColors.buttonPrimary,
                                 fontSize: 18,
                               ),
                             ),

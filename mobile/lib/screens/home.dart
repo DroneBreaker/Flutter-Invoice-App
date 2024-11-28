@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:invoicify/app_colors.dart';
+import 'package:invoicify/constants/app_colors.dart';
+import 'package:invoicify/constants/app_titles.dart';
 import 'package:invoicify/screens/auth/login.dart';
 import 'package:invoicify/screens/auth/register.dart';
 import 'package:invoicify/widgets/app_text.dart';
@@ -17,14 +18,15 @@ class HomePage extends StatelessWidget {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              AppColors.accentDark,
-              AppColors.background,
+              AppColors.primary,
+              AppColors.secondary,
+              AppColors.accent
               // Color.fromRGBO(163, 201, 226, 1.5),
               // Color.fromRGBO(150, 24, 247, 0.5),
               // Color.fromRGBO(246, 239, 167, 0.5),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
           )),
           child: Column(
             children: [
@@ -33,7 +35,7 @@ class HomePage extends StatelessWidget {
                 child: SizedBox(
                   height: 55,
                   child: AppText(
-                    title: "EVAT SUITE",
+                    title: AppTitle.intro,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
@@ -44,8 +46,7 @@ class HomePage extends StatelessWidget {
                 child: SizedBox(
                   height: 70,
                   child: AppText(
-                    title:
-                        "E-VAT Suite enhances efficiency and compliance with VAT regulations, making VAT transactions easier and more efficient for businesses.",
+                    title: AppTitle.description,
                     fontSize: 17,
                     colors: Colors.black,
                   ),
@@ -61,7 +62,7 @@ class HomePage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Button(
-                        buttonText: "Click to Login",
+                        buttonText: AppTitle.loginButton,
                         // size: const Size(160, 55),
                         fontSize: 18,
                         colors: AppColors.buttonPrimary,
@@ -74,7 +75,7 @@ class HomePage extends StatelessWidget {
                               ),
                             }),
                     Button(
-                        buttonText: "Click to Register",
+                        buttonText: AppTitle.registerButton,
                         // size: const Size(160, 55),
                         fontSize: 18,
                         colors: AppColors.buttonPrimary,

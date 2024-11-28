@@ -1,7 +1,7 @@
 // lib/theme/app_theme.dart
 
 import 'package:flutter/material.dart';
-import 'package:invoicify/app_colors.dart';
+import 'package:invoicify/constants/app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {

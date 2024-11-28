@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:invoicify/app_colors.dart';
+import 'package:invoicify/constants/app_colors.dart';
+import 'package:invoicify/constants/app_titles.dart';
 import 'package:invoicify/screens/taxpayer.dart';
 import 'package:invoicify/widgets/app_text.dart';
 import 'package:invoicify/widgets/button.dart';
@@ -53,13 +54,13 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   const SizedBox(height: 38),
                   const AppText(
-                    title: "Droners Invoicify",
+                    title: AppTitle.loginTitle,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 10),
                   const AppText(
-                    title: "Please sign-in to your account",
+                    title: AppTitle.loginDescription,
                     fontSize: 18,
                   ),
                   const SizedBox(height: 25),
@@ -113,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                         _handleLogin();
                       },
                       child: const Text(
-                        'Log In',
+                        AppTitle.logInButton,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
