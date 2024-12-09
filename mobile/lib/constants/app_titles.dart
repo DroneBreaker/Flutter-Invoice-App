@@ -22,11 +22,19 @@ class AppTitle {
   static const String invoiceNumberField = "Invoice Number";
   static const String totalAmountField = "Total Amount";
   static const String itemField = "Product";
-  static const String addItemButton = "Add Partner";
+  static const String addItemButton = "Add Item";
+  static const String priceField = "Enter price";
+
+  // ITEM SETUP
+  static const String itemSetupTitle = "Setup a Product or a service";
+  static const String itemCodeField = "Item Code";
 
   // ERRORS
   static const String businessTINError = "Please enter your business TIN";
   static const String validBusinessTINError =
       "Please enter a valid 11 character TIN";
   static const String invoiceNumberError = "Please enter your invoice number";
+  static const String noItemCodeError = "Please enter your item code";
+  static const String invalidItemNameError = "Please enter your item name";
+  static const String priceIsEmptyError = "Please enter your price";
 }
