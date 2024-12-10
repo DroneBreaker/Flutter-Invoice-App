@@ -41,25 +41,39 @@ func (r *userRepository) GetAll() ([]models.User, error) {
 }
 
 func (r *userRepository) Create(user *models.User) error {
-	query := `INSERT INTO users (name, username, businessTIN, password) VALUES ($1, $2, $3, $4) RETURNING id`
-	return r.db.QueryRow(query, user.Name, user.Username, user.BusinessTIN, user.Password).Scan(&user.ID)
+	query := `INSERT INTO users (name, username, businessTIN, password) VALUES (?, ?, ?, ?)`
+	result, err := r.db.Exec(query, user.Name, user.Username, user.BusinessTIN, user.Password)
+
+	if err != nil {
+		return err
+	}
+
+	// Retrieve the last inserted ID
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	user.ID = int(id) // Set the ID in the user object
+	return nil
+	// return r.db.QueryRow(query, user.Name, user.Username, user.BusinessTIN, user.Password).Scan(&user.ID)
 }
 
 func (r *userRepository) GetByID(id int) (*models.User, error) {
 	user := &models.User{}
-	query := `SELECT id, name, businessTIN FROM users WHERE id = $1`
+	query := `SELECT id, name, businessTIN FROM users WHERE id = ?`
 	err := r.db.QueryRow(query, id).Scan(&user.ID, &user.Name, &user.BusinessTIN)
 	return user, err
 }
 
 func (r *userRepository) Update(user *models.User) error {
-	query := `UPDATE users SET name = $1, businessTIN = $2 WHERE id = $3`
+	query := `UPDATE users SET name = $1, businessTIN = $2 WHERE id = ?`
 	_, err := r.db.Exec(query, user.Name, user.BusinessTIN, user.ID)
 	return err
 }
 
 func (r *userRepository) Delete(id int) error {
-	query := `DELETE FROM users WHERE id = $1`
+	query := `DELETE FROM users WHERE id = ?`
 	_, err := r.db.Exec(query, id)
 	return err
 }
