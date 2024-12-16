@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class AppTitle {
   //INTRO
   static const String intro = "EVAT SUITE";

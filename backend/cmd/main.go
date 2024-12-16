@@ -25,17 +25,35 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	// Routes
+	itemRepo := repository.NewItemRepository(db)
+	itemService := services.NewItemService(itemRepo)
+	itemHandler := handlers.NewItemHandler(itemService)
+
+	businessPartnerRepo := repository.NewBusinessPartnerRepository(db)
+	businessPartnerService := services.BusinessPartnerService(businessPartnerRepo)
+	businessPartnerHandler := handlers.NewBusinessPartnerHandler(businessPartnerService)
+
+	//  User Routes
 	e.GET("/users", userHandler.GetAll)
 	e.POST("/users", userHandler.Create)
 	e.GET("/users/:id", userHandler.GetByID)
 	e.PUT("/users/:id", userHandler.Update)
 	e.DELETE("/users/:id", userHandler.Delete)
 
+	// Item Routes
+	e.GET("/items", itemHandler.GetAll)
+	e.POST("/items", itemHandler.Create)
+	e.GET("items/:id", itemHandler.GetByID)
+
+	// Business Partner Routes
+	e.GET("/partners", businessPartnerHandler.GetAll)
+	e.POST("/partners", businessPartnerHandler.Create)
+	e.GET("/partners/:id", businessPartnerHandler.GetByID)
+
 	//Middleware
 	// g := e.Group("/taxpayer")
 	// g.Use(middleware.)
 
 	e.Logger.Fatal(e.Start(":4000"))
-	fmt.Println("Hi")
+	fmt.Println("Hi, welcome to my backend")
 }

@@ -67,7 +67,7 @@ func (r *userRepository) GetByID(id int) (*models.User, error) {
 }
 
 func (r *userRepository) Update(user *models.User) error {
-	query := `UPDATE users SET name = $1, businessTIN = $2 WHERE id = ?`
+	query := `UPDATE users SET name = ?, businessTIN = ? WHERE id = ?`
 	_, err := r.db.Exec(query, user.Name, user.BusinessTIN, user.ID)
 	return err
 }
